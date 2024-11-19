@@ -4,7 +4,7 @@
     {% load static %}
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feedback</title>
+    <title>dislike survey</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
@@ -42,7 +42,7 @@
             {% endfor %}
         </form>
         
-        <button type="button" class="submit-button" onclick="location.href='{% url "today_weather" %}'">Submit</button>
+        <button type="button" class="next-button" onclick="location.href='{% url "today_weather" %}'"><img src="Arrow right-circle.png"></button>
 
     </main>
 
@@ -146,26 +146,26 @@
             color: white;
         }
 
-        .submit-button {
-            background-color: #e3e3e3;
-            color: black;
-            border: none;
+        .next-button:active {
+            opacity: 1;
+            transform: scale(1.2);
+            filter: invert(51%) sepia(12%) saturate(6675%) hue-rotate(360deg) brightness(101%) contrast(109%);        
+        }
+
+        .next-button {
+            border: 0;
+            background-color: transparent;
             padding: 10px 20px;
             border-radius: 5px;
             cursor: pointer;
             display: block;
             margin: 20px auto;
+
+            opacity: 0.6;
+            transition: opacity 0.3s, transform 0.2s;        
         }
 
-        .submit-button:hover {
-            background-color: #ff7a00;
-            color: white;
-        }
 
-        .submit-button:active {
-            background-color: #ff7a00;
-            color: white;
-        }
 
     </style>
 
