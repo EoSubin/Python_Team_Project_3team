@@ -1,20 +1,183 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
-    <title>불호 아이템 설문</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feedback</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <h2>불호인 옷을 선택하세요</h2>
-    <form method="post">
-        {% csrf_token %}
-        {% for outfit in outfits %}
-            <label>
-                <input type="checkbox" name="dislike" value="{{ outfit.id }}">
-                {{ outfit.category }} - {{ outfit.name }}
-            </label><br>
-        {% endfor %}
-        <button type="submit">선택 완료</button>
-    </form>
+    <!-- 헤더 -->
+    <header>
+        <img src="logo graphics.png" alt="On Fit" class="logo">
+        <strong>On Fit</strong>
+        <!--My Page url 연결해야함-->
+        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">My Page</button>
+        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">Logout</button>
+
+    </header>
+
+    <main>
+        <h2 style="text-align: center; color:black">
+            선호하지 않는 옷 스타일을<br>선택해주세요
+        </h2>
+
+        <form method="post">
+            {% csrf_token %}
+            {% for outfit in outfits %}
+            <div class="category-container">
+                <h3>{{ outfit.category }}</h3>
+                <div class="box">
+                    <label class="button-grid">
+                        <!-- 체크박스 -->
+                        <input type="checkbox" name="dislike" value="{{ outfit.id }}" class="hidden-checkbox">
+                        <!-- 버튼 -->
+                        <button type="button" class="choice-button" onclick="toggleCheckbox(this)">
+                            {{ outfit.name }}
+                        </button>
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </form>
+        
+        <button type="button" class="submit-button" onclick="location.href='{% url "today_weather" %}'">Submit</button>
+
+    </main>
+
+    <style>
+        /* 전체 스타일 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Roboto, 'Noto Sans KR', sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background-color: #f9f9f9;
+            color: #4e4e4e;
+            padding-top: 10vh; /* 헤더 높이만큼 공간 확보 */
+        }
+
+        /* 헤더 스타일 */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10vh; /* 화면 높이의 10% */
+            font-family: Roboto, 'Noto Sans KR', sans-serif;
+            color: black;
+            font-size: 24px;
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 30px; /* 좌우 여백 추가 */
+            box-shadow: 0 1px 0 #d9d9d9; /* 헤더 아래 구분선 */
+            z-index: 1000; /* 항상 최상단에 배치 */
+        }
+
+        .logo {
+            height: 60%; /* 로고 높이 조정 */
+            margin-right: 20px;
+        }
+
+        .logout-button {
+            background-color: transparent;
+            border: none;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px 12px;
+            float: right;
+            margin-left: 20px; /* 로그아웃 버튼 왼쪽 이동 */
+            border: none;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+        
+        }
+
+        .logout-button:hover {
+            background-color: #3B7EE2;
+            color: white;
+            border-radius: 5px;
+        }
+
+        /* 박스 스타일 */
+        .box {
+            margin: 10px;
+            padding: 20px;
+            max-width: 400px;
+            width: calc(100% - 40px); /* 좌우 여백을 고려 */
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: left; /* 텍스트 왼쪽 정렬 */
+        }
+
+        .button-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        /* 체크박스 숨기기 */
+        .hidden-checkbox {
+            display: none;
+        }
+    
+        /* 버튼 스타일 */
+        .choice-button {
+            background-color: #E3E3E3;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+    
+        /* 선택된 버튼 스타일 */
+        .choice-button.active {
+            background-color: #3B7EE2;
+            color: white;
+        }
+
+        .submit-button {
+            background-color: #e3e3e3;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .submit-button:hover {
+            background-color: #ff7a00;
+            color: white;
+        }
+
+        .submit-button:active {
+            background-color: #ff7a00;
+            color: white;
+        }
+
+    </style>
+
+    <script>
+        function toggleCheckbox(button) {
+            const checkbox = button.previousElementSibling; // 체크박스 요소 가져오기
+            checkbox.checked = !checkbox.checked; // 체크 상태 토글
+            button.classList.toggle("active"); // 버튼 스타일 토글
+        } 
+    </script>
+    
+
+
 </body>
 </html>
