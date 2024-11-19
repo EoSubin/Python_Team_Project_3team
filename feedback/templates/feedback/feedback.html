@@ -11,7 +11,8 @@
     <!-- 헤더 -->
     <header>
         <img src="logo graphics.png" alt="On Fit" class="logo">
-        <strong>On Fit</strong>
+        <!--today_weather url 연결해야함-->
+        <button onclick="location.href='{% url 'logout' %}'" class="onfit-button"><strong>On Fit</strong></button>
         <!--My Page url 연결해야함-->
         <button onclick="location.href='{% url 'logout' %}'" class="logout-button">My Page</button>
         <button onclick="location.href='{% url 'logout' %}'" class="logout-button">Logout</button>
@@ -117,6 +118,22 @@
     .logo {
         height: 60%; /* 로고 높이 조정 */
         margin-right: 20px;
+    }
+
+    .onfit-button {
+        background-color: transparent;
+        border: none;
+        font-size: 24px;
+        align-items: center;
+        justify-content: flex-start;
+    }
+
+    .onfit-button:active {
+        background-color: transparent;
+        border: 1px solid #ababab;
+        border-radius: 30px
+        padding: 8px 12px;
+
     }
 
     .logout-button {
