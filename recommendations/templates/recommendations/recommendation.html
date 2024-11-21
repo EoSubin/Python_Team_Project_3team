@@ -7,82 +7,6 @@
     <title>오늘의 옷 추천</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
     <script src="{% static 'js/scripts.js' %}"></script>
-</head>
-<body>
-    <!-- 헤더 -->
-    <header>
-        <img src="logo graphics.png" alt="On Fit" class="logo">
-        <!--today_weather url 연결해야함-->
-        <button onclick="location.href='{% url 'logout' %}'" class="onfit-button"><strong>On Fit</strong></button>
-        <!--My Page url 연결해야함-->
-        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">My Page</button>
-        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">Logout</button>
-
-    </header>
-
-    <main>
-        <h1 style= "color:black;">On Fit한 옷 추천</h1>
-        <div class="box" style= "color:black;">
-            <section class="weather-info">
-                <h1>오늘 <span class="highlight">동국대학교</span>의 날씨는</h1>
-                <ul>
-                    <li>현재 온도  <strong>{{ weather.temperature }}°C</strong></li>
-                    <li class="weather-condition">날씨 조건  <img src="Rain.svg" class="weather-image"/><strong>
-                        <img 
-                        src="{% if 'rain' in conditions.lower %}Rain.svg
-                         {% elif 'snow' in conditions.lower %}Snow.svg
-                         {% elif 'wind' in conditions.lower %}Wind.svg
-                         {% else %}Sun.svg{% endif %}" 
-                        alt="{{ conditions }}" 
-                        class="weather-image">
-                    </strong></li>                    
-                    <li>풍속  <strong>{{ weather.wind_speed }}m/s</strong></li>
-                    <li>습도  <strong>{{ weather.humidity }}%</strong></li>
-                    <li>강수량  <strong>{{ weather.precipitation }}mm</strong></li>
-                </ul>
-            </section>
-        </div>
-
-        <div class="box">
-            <h2>추천된 옷</h2>
-            {% if outfits %}
-                <div>
-                    {% for outfit in outfits %}
-                        <div>
-                            <h3>{{ outfit.get_category_display }}</h3>
-                            <div class="linebox">
-                                <label class="button-grid">
-                                    <button type="button" class="object-button">
-                                        <!--이 부분 outfit name 관련 부분을 못 찾아서 일단 이렇게 써둠-->
-                                        {{ outfit.name }}
-                                    </button>
-                                </label>
-                            </div>
-                        </div>
-                    
-                    {% endfor %}
-                </div>
-            {% else %}
-                <p>추천할 옷이 없습니다.</p>
-            {% endif %}
-
-            <h3>적정 온도</h3>
-            <div class="linebox">{{ outfit.get_warmth_level_display }}</div>
-
-        </div>
-
-        <div class="box">
-            <h2>비슷한 날씨에 입었던 옷</h2>
-        </div>
-
-        <div class="box">
-            <h2>피드백을 남겨주세요</h2>
-            <button type="button" class="submit-button" onclick="location.href='{% url "feedback" %}'">START</button>    
-        </div>
-
-
-    </main>
-
     <style>
         /* 전체 스타일 */
         body {
@@ -238,6 +162,80 @@
         }
 
     </style>
+</head>
+<body>
+    <!-- 헤더 -->
+    <header>
+        <img src="logo graphics.png" alt="On Fit" class="logo">
+        <!--today_weather url 연결해야함-->
+        <button onclick="location.href='{% url 'logout' %}'" class="onfit-button"><strong>On Fit</strong></button>
+        <!--My Page url 연결해야함-->
+        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">My Page</button>
+        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">Logout</button>
 
+    </header>
+
+    <main>
+        <h1 style= "color:black;">On Fit한 옷 추천</h1>
+        <div class="box" style= "color:black;">
+            <section class="weather-info">
+                <h1>오늘 <span class="highlight">동국대학교</span>의 날씨는</h1>
+                <ul>
+                    <li>현재 온도  <strong>{{ weather.temperature }}°C</strong></li>
+                    <li class="weather-condition">날씨 조건  <img src="Rain.svg" class="weather-image"/><strong>
+                        <img 
+                        src="{% if 'rain' in conditions.lower %}Rain.svg
+                         {% elif 'snow' in conditions.lower %}Snow.svg
+                         {% elif 'wind' in conditions.lower %}Wind.svg
+                         {% else %}Sun.svg{% endif %}" 
+                        alt="{{ conditions }}" 
+                        class="weather-image">
+                    </strong></li>                    
+                    <li>풍속  <strong>{{ weather.wind_speed }}m/s</strong></li>
+                    <li>습도  <strong>{{ weather.humidity }}%</strong></li>
+                    <li>강수량  <strong>{{ weather.precipitation }}mm</strong></li>
+                </ul>
+            </section>
+        </div>
+
+        <div class="box">
+            <h2>추천된 옷</h2>
+            {% if outfits %}
+                <div>
+                    {% for outfit in outfits %}
+                        <div>
+                            <h3>{{ outfit.get_category_display }}</h3>
+                            <div class="linebox">
+                                <label class="button-grid">
+                                    <button type="button" class="object-button">
+                                        <!--이 부분 outfit name 관련 부분을 못 찾아서 일단 이렇게 써둠-->
+                                        {{ outfit.name }}
+                                    </button>
+                                </label>
+                            </div>
+                        </div>
+                    
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>추천할 옷이 없습니다.</p>
+            {% endif %}
+
+            <h3>적정 온도</h3>
+            <div class="linebox">{{ outfit.get_warmth_level_display }}</div>
+
+        </div>
+
+        <div class="box">
+            <h2>비슷한 날씨에 입었던 옷</h2>
+        </div>
+
+        <div class="box">
+            <h2>피드백을 남겨주세요</h2>
+            <button type="button" class="submit-button" onclick="location.href='{% url "feedback" %}'">START</button>    
+        </div>
+
+
+    </main>
 </body>
 </html>

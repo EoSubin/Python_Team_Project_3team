@@ -172,7 +172,7 @@
                 <h1>오늘 <span class="highlight">동국대학교</span>의 날씨는</h1>
                 <ul>
                     <li>현재 온도  <strong>{{ weather.temperature }}°C</strong></li>
-                    <li class="weather-condition">날씨 조건  <img src="Rain.svg" class="weather-image"/><strong>
+                    <li class="weather-condition">날씨 조건  <strong>
                         <img 
                         src="{% if 'rain' in conditions.lower %}Rain.svg
                          {% elif 'snow' in conditions.lower %}Snow.svg
