@@ -6,43 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>dislike survey</title>
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
-</head>
-<body>
-    <!-- 헤더 -->
-    <header>
-        <!--dislike_survey에선 다른 페이지로 넘어가지 못하게 함-->
-        <img src="logo graphics.png" alt="On Fit" class="logo">
-        <strong>On Fit</strong>
-    </header>
-
-    <main>
-        <h2 style="text-align: center; color:black">
-            선호하지 않는 옷 스타일을<br>선택해주세요
-        </h2>
-
-        <form method="post">
-            {% csrf_token %}
-            {% for outfit in outfits %}
-            <div class="category-container">
-                <h3>{{ outfit.category }}</h3>
-                <div class="box">
-                    <label class="button-grid">
-                        <!-- 체크박스 -->
-                        <input type="checkbox" name="dislike" value="{{ outfit.id }}" class="hidden-checkbox">
-                        <!-- 버튼 -->
-                        <button type="button" class="choice-button" onclick="toggleCheckbox(this)">
-                            {{ outfit.name }}
-                        </button>
-                    </label>
-                </div>
-            </div>
-            {% endfor %}
-        </form>
-        
-        <button type="button" class="next-button" onclick="location.href='{% url "today_weather" %}'"><img src="Arrow right-circle.png"></button>
-
-    </main>
-
+    <script src="{% static 'js/scripts.js' %}"></script>
     <style>
         /* 전체 스타일 */
         body {
@@ -123,7 +87,6 @@
         .box {
             margin: 10px;
             padding: 20px;
-            max-width: 400px;
             width: calc(100% - 40px); /* 좌우 여백을 고려 */
             border: 1px solid #d9d9d9;
             border-radius: 8px;
@@ -181,7 +144,6 @@
 
 
     </style>
-
     <script>
         function toggleCheckbox(button) {
             const checkbox = button.previousElementSibling; // 체크박스 요소 가져오기
@@ -189,8 +151,41 @@
             button.classList.toggle("active"); // 버튼 스타일 토글
         } 
     </script>
-    
+</head>
+<body>
+    <!-- 헤더 -->
+    <header>
+        <!--dislike_survey에선 다른 페이지로 넘어가지 못하게 함-->
+        <img src="logo graphics.png" alt="On Fit" class="logo">
+        <strong>On Fit</strong>
+    </header>
 
+    <main>
+        <h2 style="text-align: center; color:black">
+            선호하지 않는 옷 스타일을<br>선택해주세요
+        </h2>
 
+        <form method="post">
+            {% csrf_token %}
+            {% for outfit in outfits %}
+            <div class="category-container">
+                <h3>{{ outfit.category }}</h3>
+                <div class="box">
+                    <label class="button-grid">
+                        <!-- 체크박스 -->
+                        <input type="checkbox" name="dislike" value="{{ outfit.id }}" class="hidden-checkbox">
+                        <!-- 버튼 -->
+                        <button type="button" class="choice-button" onclick="toggleCheckbox(this)">
+                            {{ outfit.name }}
+                        </button>
+                    </label>
+                </div>
+            </div>
+            {% endfor %}
+        </form>
+        
+        <button type="button" class="next-button" onclick="location.href='{% url "today_weather" %}'"><img src="Arrow right-circle.png"/></button>
+
+    </main>
 </body>
 </html>

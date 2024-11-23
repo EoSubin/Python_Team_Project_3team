@@ -4,8 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .models import UserProfile
 from .forms import SignUpForm, LoginForm
-
-
+from feedback.models import OOTD
 
 # 회원가입 뷰
 def signup_view(request):
@@ -57,3 +56,9 @@ def upload_ootd_view(request):
 # url 뷰 함수 생성
 def upload_ootd(request):
     return render(request, 'users/upload_ootd.html')
+
+@login_required
+def ootd_list(request):
+    user = request.user
+    ootds = OOTD.objects.filter(user=user).order_by('-created_at')  # 최신순 정렬
+    return render(request, 'users/my page.html', {'ootds': ootds})
