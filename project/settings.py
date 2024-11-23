@@ -26,6 +26,7 @@ INSTALLED_APPS = [
     'survey',
     'recommendations',
     'feedback',
+    'ootd',
 ]
 
 MIDDLEWARE = [

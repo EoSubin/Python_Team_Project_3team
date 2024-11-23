@@ -1,5 +1,5 @@
 from django.shortcuts import render, redirect
-from .models import Outfit, UserPreference, WeatherRecord
+from .models import *
 from .forms import FeedbackForm
 from django.conf import settings
 from pyowm import OWM
@@ -25,63 +25,59 @@ def get_weather_data(city="Seoul"):
     }
 
 # 추천 로직 (옷 추천과 피드백 처리)
-def recommend_outfit(request):
+def recommendations_view(request):
+    # 사용자 기본값 설정
+    user_pref = None
+    avoid_categories = []
+
+    # 로그인 여부 확인 및 사용자 설정 불러오기
     if request.user.is_authenticated:
-        user_pref, created = UserPreference.objects.get_or_create(user_id=request.user.id)
+        user_pref, created = UserPreference.objects.get_or_create(user=request.user)
         avoid_categories = user_pref.avoid_categories.all()
-    else:
-        avoid_categories = []  # 비로그인 사용자는 기본 설정으로 빈 리스트
 
+    # 날씨 데이터 가져오기
     weather_data = get_weather_data()
-    temperature = weather_data['temperature']
-    conditions = weather_data['status']
+    temperature = weather_data["temperature"]
+    conditions = weather_data["status"]
 
-    # 기온에 따른 기본 추천 Level
-    warmth_level = 1 if temperature >= 30 else 2 if temperature >= 23 else 3 if temperature >= 15 else 4 if temperature >= 5 else 5
-    
-    # 특수 조건 적용 (비, 눈, 바람 등)
-    if 'rain' in conditions.lower():
+    # 기온에 따른 추천 Level 설정
+    if temperature >= 30:
+        warmth_level = 1
+    elif temperature >= 23:
+        warmth_level = 2
+    elif temperature >= 15:
+        warmth_level = 3
+    elif temperature >= 5:
+        warmth_level = 4
+    else:
+        warmth_level = 5
+
+    # 날씨 조건에 따른 추가 조정
+    if "rain" in conditions.lower():
         warmth_level += 1
-    elif 'snow' in conditions.lower():
+    elif "snow" in conditions.lower():
         warmth_level += 2
 
-    # 추천할 옷 필터링 (사용자가 피하고 싶은 종류 제외)
-    exclude_ids = avoid_categories.values_list('id', flat=True) if hasattr(avoid_categories, 'values_list') else []
+    # 추천 옷 필터링
+    exclude_ids = avoid_categories.values_list('id', flat=True)
     recommended_outfits = Outfit.objects.filter(warmth_level=warmth_level).exclude(id__in=exclude_ids)
-    
-    # 피드백 폼 처리
+
+    # 피드백 처리
     if request.method == 'POST':
         form = FeedbackForm(request.POST)
         if form.is_valid():
             feedback = form.cleaned_data['feedback']
-            
-            # 피드백에 따른 가중치 조정
             for outfit in recommended_outfits:
-                # WeatherRecord를 통해 해당 옷에 대한 피드백 기록
-                weather_record, created = WeatherRecord.objects.get_or_create(user_outfit=outfit)
-                
-                # 피드백에 따라 가중치 변경
-                if feedback == 'negative':
-                    # 부정적 피드백을 받았다면 가중치를 1단계 낮춤
-                    if outfit.warmth_level > 1:
-                        outfit.warmth_level -= 1
-                    outfit.save()  # 가중치 업데이트 후 저장
-                # 피드백을 받은 후, 사용자 피드백을 WeatherRecord에 기록
+                weather_record, created = WeatherRecord.objects.get_or_create(user=request.user, outfit=outfit)
                 weather_record.feedback = feedback
                 weather_record.save()
-
-            return redirect('recommend_outfit')  # 피드백을 제출하고 나면 다시 추천 페이지로 리디렉션
-
+            return redirect('recommendations')  # 성공적으로 제출한 후 페이지 리로드
     else:
         form = FeedbackForm()
 
-    # 추천된 옷들을 템플릿에 전달
-    return render(request, 'weather/recommendation.html', {
+    # 템플릿에 데이터 전달
+    return render(request, 'recommendations/recommendation.html', {
         'outfits': recommended_outfits,
-        'temperature': temperature,
-        'conditions': conditions,
-        'wind_speed': weather_data["wind_speed"],
-        'humidity': weather_data["humidity"],
-        'precipitation': weather_data["precipitation"],
-        'form': form
+        'weather': weather_data,  # 날씨 데이터를 weather 키로 전달
+        'form': form,
     })

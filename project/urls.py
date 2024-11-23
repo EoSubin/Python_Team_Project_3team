@@ -11,6 +11,7 @@ urlpatterns = [
     path('users/', include('users.urls')),
     path('survey/', include('survey.urls')),
     path('feedback/', include('feedback.urls')),
+    path('recommendations/', include('recommendations.urls')),
     path('', home_view, name='home'),  # 초기화면을 홈 화면 뷰로 변경
 ]
 
