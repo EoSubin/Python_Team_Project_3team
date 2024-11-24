@@ -11,7 +11,7 @@
     <link rel="stylesheet" href="{% static 'css/style.css' %}">
 </head>
 <body>
-    <form id="login-form" method="post" action="{% url 'login' %}">
+    <form id="login-form" method="post" action="{% url 'users:login' %}">
     {% csrf_token %}
     <h1 id="login-title">로그인</h1>
     <div id="username-field">
@@ -27,7 +27,7 @@
     </div>
     <button type="submit">Login</button>
     <div class="register-message">
-        계정이 없으신가요? <a href="{% url 'signup' %}">회원가입</a>
+        계정이 없으신가요? <a href="{% url 'users:signup' %}">회원가입</a>
     </div>
     </form>
     <script src="{% static 'js/script.js' %}"></script>

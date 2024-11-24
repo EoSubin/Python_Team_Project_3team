@@ -1,25 +1,241 @@
-<!-- templates/weather/recommendation.html -->
 <!DOCTYPE html>
 <html lang="ko">
 <head>
+    {% load static %}
     <meta charset="UTF-8">
-    <title>오늘의 날씨에 맞는 옷차림 추천</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>오늘의 옷 추천</title>
+    <link rel="stylesheet" href="{% static 'css/style.css' %}">
+    <script src="{% static 'js/scripts.js' %}"></script>
+    <style>
+        /* 전체 스타일 */
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Roboto, 'Noto Sans KR', sans-serif;
+            display: flex;
+            flex-direction: column;
+            justify-content: center; /* 수직 중앙 정렬 */
+            align-items: center;
+            background-color: #f9f9f9;
+            color: #4e4e4e;
+            padding-top: 10vh; /* 헤더 높이만큼 공간 확보 */
+            height: 100vh; /* 전체 높이를 화면 크기만큼 설정 */
+            overflow: hidden; /* 스크롤을 body 전체에서만 처리 */
+        }
+
+        .object-button {
+            background-color: #E3E3E3;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 30px;
+            cursor: pointer;
+            color: black;
+            margin-bottom: 10px;
+        }
+
+        /* 헤더 스타일 */
+        header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 10vh; /* 화면 높이의 10% */
+            background-color: #ffffff;
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 30px;
+            box-shadow: 0 1px 0 #d9d9d9;
+            z-index: 1000; /* 헤더를 최상단에 고정 */
+        }
+
+        /* 콘텐츠 영역 스타일 */
+        body > *:not(header) {
+            margin-top: 10vh; /* 헤더 아래에 위치하게 여백 추가 */
+            width: 100%;
+            height: calc(100vh - 10vh); /* 화면 높이에서 헤더를 제외한 높이로 설정 */
+            overflow-y: auto; /* 콘텐츠에서 세로 스크롤 가능 */
+            flex-grow: 1; /* 콘텐츠가 화면을 채우도록 설정 */
+            display: flex;
+            flex-direction: column;
+            align-items: center; /* 수평 중앙 정렬 */
+            justify-content: flex-start; /* 콘텐츠 시작 부분부터 정렬 */
+        }   
+
+        .logo {
+            height: 60%;
+            margin-right: 20px;
+        }
+
+        .onfit-button {
+            color: black;
+            background-color: transparent;
+            border: none;
+            font-family: Roboto, 'Noto Sans KR', sans-serif;
+            font-size: 24px;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .onfit-button:active {
+            background-color: transparent;
+            border: 1px solid #ababab;
+            border-radius: 30px;
+            padding: 8px 12px;
+        }
+
+        .logout-button {
+            background-color: transparent;
+            border: none;
+            color: #333;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 8px 12px;
+            float: right;
+            margin-left: 20px;
+            border-radius: 5px;
+        }
+
+        .logout-button:hover {
+            background-color: #3B7EE2;
+            color: white;
+            border-radius: 5px;
+        }
+
+        /* 박스 스타일 */
+        .box {
+            margin: 10px;
+            padding: 20px;
+            max-width: 400px;
+            width: calc(100% - 40px);
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
+        .linebox {
+            margin: 10px;
+            padding: 20px;
+            max-width: 400px;
+            width: calc(100% - 40px);
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            background-color: #ffffff;
+            text-align: left;
+        }
+
+        .weather-condition {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .weather-info ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .weather-info li {
+            margin-bottom: 15px;
+            font-size: 16px;
+        }
+
+        .weather-info h1 {
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+        }
+
+        .weather-info .highlight {
+            color: #FF7A00;
+            font-weight: bold;
+        }
+
+        .weather-image {
+            width: 30px;
+            height: 30px;
+        }
+
+        .submit-button:hover {
+            background-color: #ff7a00;
+            color: white;
+        }
+
+        .submit-button:active {
+            background-color: #ff7a00;
+            color: white;
+        }
+
+    </style>
 </head>
 <body>
-    <h1>오늘의 날씨에 맞는 옷차림 추천</h1>
-    <p>현재 온도: {{ temperature }}°C</p>
-    <p>날씨 조건: {{ conditions }}</p>
-    <p>풍속: {{ wind_speed }} m/s</p>
-    <p>습도: {{ humidity }}%</p>
-    <p>강수량: {{ precipitation }} mm</p>
-    
-    <h2>추천된 옷차림</h2>
-    <ul>
-        {% for outfit in outfits %}
-            <li>{{ outfit.category }} - {{ outfit.name }} ({{ outfit.get_warmth_level_display }})</li>
-        {% empty %}
-            <p>추천된 옷차림이 없습니다.</p>
-        {% endfor %}
-    </ul>
+    <!-- 헤더 -->
+</head>
+<body>
+    <header>
+        <img src="{% static 'images/logo_graphics.png' %}" alt="On Fit" class="logo">
+        <button onclick="location.href='{% url 'home' %}'" class="onfit-button"><strong>On Fit</strong></button>
+        <button onclick="location.href='{% url 'users:my_page' %}'" class="logout-button">My Page</button>
+        <button onclick="location.href='{% url 'users:logout' %}'" class="logout-button">Logout</button>
+    </header>
+
+    <main>
+        <h1 style="color:black;">On Fit한 옷 추천</h1>
+        <div class="box" style="color:black;">
+            <section class="weather-info">
+                <h1>오늘 <span class="highlight">동국대학교</span>의 날씨는</h1>
+                <ul>
+                    <li>현재 온도: <strong>{{ weather.temperature }}°C</strong></li>
+                    <li class="weather-condition">
+                        날씨 조건: <strong>{{ weather.status }}</strong>
+                        <img 
+                            src="{% static 'images/' %}{% if 'rain' in weather.status %}Rain.svg{% elif 'snow' in weather.status %}Snow.svg{% elif 'wind' in weather.status %}Wind.svg{% else %}Sun.svg{% endif %}" 
+                            alt="{{ weather.status }}" 
+                            class="weather-image">
+                    </li>
+                    <li>풍속: <strong>{{ weather.wind_speed }}m/s</strong></li>
+                    <li>습도: <strong>{{ weather.humidity }}%</strong></li>
+                    <li>강수량: <strong>{{ weather.precipitation }}mm</strong></li>
+                </ul>
+            </section>
+        </div>
+
+        <div class="box">
+            <h2>추천된 옷</h2>
+            {% if sorted_grouped_outfits %}
+                <div>
+                    {% for category, category_outfits in sorted_grouped_outfits.items %}
+                    <div>
+                        <h3>{{ category|title }}</h3>
+                        <div class="linebox">
+                            {% for outfit in category_outfits %}
+                                <button type="button" class="object-button">
+                                    {{ outfit.name }}
+                                </button>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <p>추천할 옷이 없습니다.</p>
+            {% endif %}
+        </div>
+
+        <div class="box">
+            <h3>적정 온도</h3>
+            <div class="linebox">{{ warmth_level }} (현재 온도: {{ weather.temperature }}°C)</div>
+        </div>
+
+        <!-- Feedback으로 이동 버튼 추가 -->
+        <div class="box">
+            <h2>피드백을 남겨주세요</h2>
+            <button type="button" class="submit-button" onclick="location.href='{% url 'feedback' %}'">피드백 작성</button>    
+        </div>
+    </main>
 </body>
 </html>

@@ -1,62 +1,105 @@
 from django.shortcuts import render
-from .models import Outfit, UserPreference
-from survey.models import Dislike  # 불호 아이템 모델 추가
-from django.conf import settings
 from pyowm import OWM
+from django.conf import settings
+from .models import Outfit
+from survey.models import Dislike
+from users.models import ConditionActivity
+from weather.models import Outfit
 
 def get_weather_data(city="Seoul"):
-    owm = OWM(settings.WEATHER_API_KEY)
-    mgr = owm.weather_manager()
-    observation = mgr.weather_at_place(city)
-    weather = observation.weather
-    temperature = weather.temperature('celsius')["temp"]
-    status = weather.detailed_status
-    wind_speed = weather.wind()["speed"]  # 풍속
-    humidity = weather.humidity  # 습도
-    precipitation = weather.rain.get('1h', 0)  # 강수량 (1시간 기준)
+    try:
+        owm = OWM(settings.WEATHER_API_KEY)
+        mgr = owm.weather_manager()
+        observation = mgr.weather_at_place(city)
+        weather = observation.weather
+        return {
+            "temperature": weather.temperature('celsius')["temp"],
+            "min_temp": weather.temperature('celsius')["temp_min"],  # 최저 온도
+            "max_temp": weather.temperature('celsius')["temp_max"],  # 최고 온도
+            "status": weather.detailed_status,
+            "wind_speed": weather.wind()["speed"],
+            "humidity": weather.humidity,
+            "precipitation": weather.rain.get('1h', 0),
+        }
+    except Exception as e:
+        print(f"Error fetching weather data: {e}")
+        return {
+            "temperature": None,
+            "min_temp": None,
+            "max_temp": None,
+            "status": "unknown",
+            "wind_speed": None,
+            "humidity": None,
+            "precipitation": None,
+        }
 
-    return {
-        "temperature": temperature,
-        "status": status,
-        "wind_speed": wind_speed,
-        "humidity": humidity,
-        "precipitation": precipitation
-    }
 
-def recommend_outfit(request):
-    if request.user.is_authenticated:
-        # 로그인된 사용자의 경우 UserPreference 및 불호 아이템 불러오기
-        user_pref, created = UserPreference.objects.get_or_create(user_id=request.user.id)
-        avoid_categories = user_pref.avoid_categories.all()
-        disliked_outfit_ids = Dislike.objects.filter(user=request.user).values_list('outfit_id', flat=True)
-    else:
-        # 비로그인 사용자의 경우 기본 설정 사용
-        avoid_categories = []  # 빈 리스트로 설정하여 오류 방지
-        disliked_outfit_ids = []  # 비로그인 사용자는 불호 아이템 설정 없음
-
+def recommendation_view(request):
+    # 날씨 데이터 가져오기
     weather_data = get_weather_data()
     temperature = weather_data['temperature']
-    conditions = weather_data['status']
 
-    # 기온에 따른 기본 추천 Level
-    warmth_level = 1 if temperature >= 30 else 2 if temperature >= 23 else 3 if temperature >= 15 else 4 if temperature >= 5 else 5
+    # 기본 warmth_level 설정
+    warmth_level = (
+        1 if temperature >= 30 else
+        2 if temperature >= 23 else
+        3 if temperature >= 15 else
+        4 if temperature > 5 else
+        5
+    )
 
-    # 특수 조건 적용 (비, 눈, 바람 등)
-    if 'rain' in conditions.lower():
-        warmth_level += 1
-    elif 'snow' in conditions.lower():
-        warmth_level += 2
+    # 사용자의 최신 ConditionActivity 가져오기
+    condition_activity = ConditionActivity.objects.filter(user=request.user).last()
 
-    # 추천할 옷 필터링 (사용자가 피하고 싶은 종류 및 불호 아이템 제외)
-    exclude_ids = avoid_categories.values_list('id', flat=True) if hasattr(avoid_categories, 'values_list') else []
-    exclude_ids = list(exclude_ids) + list(disliked_outfit_ids)  # 불호 아이템과 피하고 싶은 카테고리 아이템 결합
-    recommended_outfits = Outfit.objects.filter(warmth_level=warmth_level).exclude(id__in=exclude_ids)
+    # 사용자의 컨디션과 활동에 따른 레벨 조정
+    if condition_activity:
+        if condition_activity.condition == "감기" or condition_activity.activity == "실외":
+            warmth_level = min(warmth_level + 1, 5)  # 최대 레벨은 5로 제한
 
+    # 해당 warmth_level에 맞는 옷 추천
+    recommended_outfits = Outfit.objects.filter(warmth_level=warmth_level)
+
+    # 추천된 옷에서 사용자가 선호하지 않는 옷 제외
+    disliked_outfits = Dislike.objects.filter(user=request.user)
+    disliked_outfit_ids = disliked_outfits.values_list('outfit', flat=True)
+    recommended_outfits = recommended_outfits.exclude(id__in=disliked_outfit_ids)
+
+    # 카테고리별로 옷을 그룹화
+    grouped_outfits = {}
+    for outfit in recommended_outfits.order_by("category"):
+        grouped_outfits.setdefault(outfit.category, []).append(outfit)
+
+    # 카테고리 순서 지정
+    category_order = ["outer", "top", "bottom", "other"]
+    sorted_grouped_outfits = {category: grouped_outfits.get(category, []) for category in category_order}
+
+    # 템플릿에 데이터 전달
     return render(request, 'weather/recommendation.html', {
-        'outfits': recommended_outfits,
-        'temperature': temperature,
-        'conditions': conditions,
-        'wind_speed': weather_data["wind_speed"],
-        'humidity': weather_data["humidity"],
-        'precipitation': weather_data["precipitation"]
+        'weather': weather_data,
+        'sorted_grouped_outfits': sorted_grouped_outfits,
+        'warmth_level': warmth_level,  # 최종 레벨
+    })
+
+
+def today_weather(request):
+    # 날씨 데이터 가져오기
+    weather_data = get_weather_data()
+
+    # 최저 온도와 최고 온도의 차이 계산
+    min_temp = weather_data.get("min_temp")
+    max_temp = weather_data.get("max_temp")
+    temperature_difference = None
+    alert_message = None
+
+    if min_temp is not None and max_temp is not None:
+        temperature_difference = max_temp - min_temp
+
+        # 일교차가 10도 이상인 경우 알림 메시지 설정
+        if temperature_difference >= 10:
+            alert_message = "오늘 일교차가 유독 큰 날입니다. 옷을 신경써서 입어주세요."
+
+    # 템플릿에 전달
+    return render(request, "weather/today_weather.html", {
+        "weather": weather_data,
+        "alert_message": alert_message,
     })

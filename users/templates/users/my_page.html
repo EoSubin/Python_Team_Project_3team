@@ -55,14 +55,6 @@
             justify-content: flex-start;
         }
 
-        .onfit-button:active {
-            background-color: transparent;
-            border: 1px solid #ababab;
-            border-radius: 30px
-            padding: 8px 12px;
-
-        }
-
         .logout-button {
             background-color: transparent;
             border: none;
@@ -71,12 +63,8 @@
             cursor: pointer;
             padding: 8px 12px;
             float: right;
-            margin-left: 20px; /* 로그아웃 버튼 왼쪽 이동 */
-            border: none;
-            padding: 5px 10px;
+            margin-left: 20px;
             border-radius: 5px;
-            cursor: pointer;
-        
         }
 
         .logout-button:hover {
@@ -157,7 +145,30 @@
             font-size: 24px;
             cursor: pointer;
         }
+
+        .submit-button {
+            background-color: #e3e3e3;
+            color: black;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            display: block;
+            margin: 20px auto;
+        }
+
+        .submit-button:hover {
+            background-color: #ff7a00;
+            color: white;
+        }
+
+        .submit-button:active {
+            background-color: #ff7a00;
+            color: white;
+        }
+
     </style>
+
     <script>
         // 갤러리 이미지 클릭 이벤트
         const images = document.querySelectorAll('.gallery img');
@@ -185,41 +196,54 @@
             }
         });
     </script>
+
 </head>
 
 <body>
     <header>
-        <img src="logo graphics.png" alt="On Fit" class="logo">
-        <!--today_weather url 연결해야함-->
-        <button onclick="location.href='{% url 'logout' %}'" class="onfit-button"><strong>On Fit</strong></button>
-        <!--My Page url 연결해야함-->
-        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">My Page</button>
-        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">Logout</button>
+        <img src="{% static 'images/logo_graphics.png' %}" alt="On Fit" class="logo">
+        <button onclick="location.href='{% url 'home' %}'" class="onfit-button"><strong>On Fit</strong></button>
+        <button onclick="location.href='{% url 'users:my_page' %}'" class="logout-button">My Page</button>
+        <button onclick="location.href='{% url 'users:logout' %}'" class="logout-button">Logout</button>
     </header>
 
     <main>
-        <h1 style= "color:black;">My Page</h1>
+        <h1 style="color:black;">My Page</h1>
 
         <div class="box">
-            <h2>안녕하세요 <span class="highlight">{{user.username}}</span>님!</h2>
-        </div>
+            <h2>My Page</h2>
+            <p>안녕하세요, <span class="highlight">{{ user_profile.user.username }}</span>님!</p>
 
-        <h2 style= "color:black;">과거 OOTD</h2>
-        <div class="box">
-            <div class="gallery">
-                {% for ootd in ootds %}
-                    <img src="{{ ootd.image.url }}" alt="OOTD Image" data-date="{{ ootd.created_at }}">
+            <!-- Feedback 섹션 -->
+            <h3>과거 OOTD 데이터</h3>
+            <div class="box">
+                {% for feedback in feedbacks %}
+                    <div>
+                        <p>만족도: {{ feedback.get_satisfaction_display }}</p>
+                        {% if feedback.ootd_photo %}
+                            <img src="{{ feedback.ootd_photo.url }}" alt="Uploaded OOTD" style="max-width: 200px; height: auto;">
+                        {% else %}
+                            <p>사진 없음</p>
+                        {% endif %}
+                    </div>
                 {% empty %}
-                    <p>업로드된 OOTD가 없습니다.</p>
+                    <p>아직 등록된 Feedback이 없습니다.</p>
                 {% endfor %}
             </div>
-    
-            <!-- 모달 -->
-            <div id="imageModal" class="modal">
-                <span class="close">&times;</span>
-                <img id="modalImage" src="" alt="Large OOTD">
-                <p id="imageDate"></p>
-            </div>
+        </div>
+
+        <!-- 모달 -->
+        <div id="imageModal" class="modal">
+            <span class="close">&times;</span>
+            <img id="modalImage" src="" alt="Large OOTD">
+            <p id="imageDate"></p>
+        </div>
+
+        <!-- 취향 재설정 -->
+        <h2 style="color:black;">옷 불호 취향 재설정하기</h2>
+        <div class="box">
+            <button type="button" class="submit-button" onclick="location.href='{% url "dislike_survey" %}'">START</button>    
         </div>
     </main>
 </body>
+</html>

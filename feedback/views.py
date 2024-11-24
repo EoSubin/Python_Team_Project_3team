@@ -1,37 +1,23 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth.decorators import login_required
-from django.contrib import messages
-from weather.views import get_weather_data
-from .models import Feedback, OOTD
-from .forms import FeedbackForm, OOTDForm
+from .models import Feedback
+from .forms import FeedbackForm
 
-@login_required
 def feedback_view(request):
-    feedback_form = FeedbackForm()
-    ootd_form = OOTDForm()
-    weather_data = get_weather_data("Seoul")  # 서울의 날씨 데이터를 가져옴
-
     if request.method == 'POST':
-        if 'submit_feedback' in request.POST:
-            feedback_form = FeedbackForm(request.POST)
-            if feedback_form.is_valid():
-                feedback = feedback_form.save(commit=False)
-                feedback.user = request.user
-                feedback.save()
-                messages.success(request, "피드백이 제출되었습니다!")
-                return redirect('feedback')
+        print("POST 데이터:", request.POST)  # 디버깅용
+        print("FILES 데이터:", request.FILES)  # 파일 데이터 확인
 
-        if 'upload_ootd' in request.POST:
-            ootd_form = OOTDForm(request.POST, request.FILES)
-            if ootd_form.is_valid():
-                ootd = ootd_form.save(commit=False)
-                ootd.user = request.user
-                ootd.save()
-                messages.success(request, "OOTD 사진이 업로드되었습니다!")
-                return redirect('feedback')
+        form = FeedbackForm(request.POST, request.FILES)  # request.FILES 포함
+        if form.is_valid():  # 폼 검증
+            feedback = form.save(commit=False)
+            feedback.user = request.user  # 현재 사용자 저장
+            feedback.save()  # 데이터베이스에 저장
 
-    return render(request, 'feedback/feedback.html', {
-        'feedback_form': feedback_form,
-        'ootd_form': ootd_form,
-        'weather': weather_data  # 날씨 데이터를 템플릿에 전달
-    })
+            print("Feedback 저장 성공:", feedback)  # 디버깅용 출력
+            return redirect('users:my_page')  # 제출 후 my_page로 리다이렉트
+        else:
+            print("폼 에러:", form.errors)  # 폼 에러 디버깅 출력
+    else:
+        form = FeedbackForm()
+
+    return render(request, 'feedback/feedback.html', {'form': form})

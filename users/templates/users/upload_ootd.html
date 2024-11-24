@@ -54,14 +54,6 @@
             justify-content: flex-start;
         }
 
-        .onfit-button:active {
-            background-color: transparent;
-            border: 1px solid #ababab;
-            border-radius: 30px
-            padding: 8px 12px;
-
-        }
-
         .logout-button {
             background-color: transparent;
             border: none;
@@ -181,80 +173,70 @@
 
     </style>
 
-    <script>
-        // 버튼 색상 토글 함수
-        function toggleButton(button) {
-            const isActive = button.classList.contains("active");
-            const buttons = button.parentElement.querySelectorAll(".choice-button");
-            buttons.forEach(btn => btn.classList.remove("active"));
+<script>
+    // 버튼 색상 토글 함수
+    function toggleButton(button, fieldId) {
+        const isActive = button.classList.contains("active");
+        const buttons = button.parentElement.querySelectorAll(".choice-button");
+        buttons.forEach(btn => btn.classList.remove("active"));
 
-            if (!isActive) {
-                button.classList.add("active");
-            }
+        if (!isActive) {
+            button.classList.add("active");
+            // 선택된 값을 hidden input에 설정
+            const hiddenField = document.getElementById(fieldId);
+            hiddenField.value = button.textContent.trim();
         }
+    }
 
-        function previewImage(event) {
-            const preview = document.getElementById('preview');
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    preview.src = e.target.result;
-                }
-                reader.readAsDataURL(file);
+    function previewImage(event) {
+        const preview = document.getElementById('preview');
+        const file = event.target.files[0];
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.src = e.target.result;
             }
+            reader.readAsDataURL(file);
         }
-
-    </script>
+    }
+</script>
 </head>
 <body>
-    <!-- 헤더 -->
-    <header>
-        <img src="logo graphics.png" alt="On Fit" class="logo">
-        <!--today_weather url 연결해야함-->
-        <button onclick="location.href='{% url 'logout' %}'" class="onfit-button"><strong>On Fit</strong></button>
-        <!--My Page url 연결해야함-->
-        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">My Page</button>
-        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">Logout</button>
+<header>
+    <img src="{% static 'images/logo_graphics.png' %}" alt="On Fit" class="logo">
+    <button onclick="location.href='{% url 'home' %}'" class="onfit-button"><strong>On Fit</strong></button>
+    <button onclick="location.href='{% url 'users:my_page' %}'" class="logout-button">My Page</button>
+    <button onclick="location.href='{% url 'users:logout' %}'" class="logout-button">Logout</button>
+</header>
 
-    </header>
-    <!-- 메인 컨텐츠 -->
-    <main>
-        <h1 style= "color:black;">On Fit한 옷 추천</h1>
-        <div class="box">
-            <section class="outfit-recommendation">
-                <form method="post" enctype="multipart/form-data">
-                    {% csrf_token %}
-                    <div>
-                        <label for="condition"><strong>오늘의 컨디션은 어떠신가요?</strong></label>
-                        <div class="button-group">
-                            <button type="button" class="choice-button" onclick="toggleButton(this)">보통</button>
-                            <button type="button" class="choice-button" onclick="toggleButton(this)">감기</button>                        </div>
+<main>
+    <h1 style= "color:black;">On Fit한 옷 추천</h1>
+    <div class="box">
+        <section class="outfit-recommendation">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div>
+                    <label for="condition"><strong>오늘의 컨디션은 어떠신가요?</strong></label>
+                    <div class="button-group">
+                        <button type="button" class="choice-button" onclick="toggleButton(this, 'condition')">보통</button>
+                        <button type="button" class="choice-button" onclick="toggleButton(this, 'condition')">감기</button>                        
                     </div>
+                    <input type="hidden" id="condition" name="condition" value="보통">
+                </div>
 
-                    <div>
-                        <label for="activity"><strong>오늘은 어디서 주로 활동하시나요?</strong></label>
-                        <div class="button-group">
-                            <button type="button" class="choice-button" onclick="toggleButton(this)">실내</button>
-                            <button type="button" class="choice-button" onclick="toggleButton(this)">실외</button>                        </div>
+                <div>
+                    <label for="activity"><strong>오늘은 어디서 주로 활동하시나요?</strong></label>
+                    <div class="button-group">
+                        <button type="button" class="choice-button" onclick="toggleButton(this, 'activity')">실내</button>
+                        <button type="button" class="choice-button" onclick="toggleButton(this, 'activity')">실외</button>                        
                     </div>
+                    <input type="hidden" id="activity" name="activity" value="실내">
+                </div>
 
-                    <div>
-                        <label for="ootd_photo"><strong>오늘의 OOTD 업로드 하기</strong></label>
-                        <div class="ootd-upload-container">
-                            <label for="ootd_photo" class="upload-button">
-                                <img src="Plus Circle.png"class="plus-icon">
-                            </label>
-                            <input type="file" name="ootd_photo" id="ootd_photo" accept="image/*" style="display:none;" onchange="previewImage(event)">
-                            <img id="preview" src="{% if user.userprofile.ootd_photo %}{{ user.userprofile.ootd_photo.url }}{% endif %}" alt="OOTD 사진" class="ootd-preview">
-                        </div>
-                    </div>
-    
-                    <button type="button" class="submit-button" onclick="location.href='{% url "recommend_outfit" %}'">OK</button>    
-                </form>
-            </section>
-            </div>
-
-    </main>
+                <button type="submit" class="submit-button">OK</button>    
+            </form>
+        </section>
+    </div>
+</main>
 </body>
 </html>

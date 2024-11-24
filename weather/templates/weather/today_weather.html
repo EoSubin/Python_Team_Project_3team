@@ -27,21 +27,18 @@
             top: 0;
             left: 0;
             width: 100%;
-            height: 10vh; /* 화면 높이의 10% */
-            font-family: Roboto, 'Noto Sans KR', sans-serif;
-            color: black;
-            font-size: 24px;
+            height: 10vh;
             background-color: #ffffff;
             display: flex;
             align-items: center;
             justify-content: flex-start;
-            padding: 0 30px; /* 좌우 여백 추가 */
-            box-shadow: 0 1px 0 #d9d9d9; /* 헤더 아래 구분선 */
-            z-index: 1000; /* 항상 최상단에 배치 */
+            padding: 0 30px;
+            box-shadow: 0 1px 0 #d9d9d9;
+            z-index: 1000;
         }
 
         .logo {
-            height: 60%; /* 로고 높이 조정 */
+            height: 60%;
             margin-right: 20px;
         }
 
@@ -55,14 +52,6 @@
             justify-content: flex-start;
         }
 
-        .onfit-button:active {
-            background-color: transparent;
-            border: 1px solid #ababab;
-            border-radius: 30px
-            padding: 8px 12px;
-
-        }
-
         .logout-button {
             background-color: transparent;
             border: none;
@@ -71,12 +60,8 @@
             cursor: pointer;
             padding: 8px 12px;
             float: right;
-            margin-left: 20px; /* 로그아웃 버튼 왼쪽 이동 */
-            border: none;
-            padding: 5px 10px;
+            margin-left: 20px;
             border-radius: 5px;
-            cursor: pointer;
-        
         }
 
         .logout-button:hover {
@@ -85,34 +70,33 @@
             border-radius: 5px;
         }
 
-        /* 박스 스타일 */
         .box {
             margin: 10px;
             padding: 20px;
-            width: calc(100% - 40px); /* 좌우 여백을 고려 */
+            width: calc(100% - 40px);
             border: 1px solid #d9d9d9;
             border-radius: 8px;
             background-color: #ffffff;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-            text-align: left; /* 텍스트 왼쪽 정렬 */
+            text-align: left;
         }
 
         .weather-condition {
-            display: flex; /* 가로 정렬 */
-            align-items: center; /* 텍스트와 이미지의 세로 중심 정렬 */
-            gap: 10px; /* 텍스트와 이미지 사이 간격 */
-            margin-bottom: 15px; /* 각 li 간격 */
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
         .weather-info ul {
-            list-style: none; /* li 기본 스타일 제거 */
+            list-style: none;
             padding: 0;
             margin: 0;
         }
 
         .weather-info li {
-            margin-bottom: 15px; /* li 요소 간의 줄 간격 */
-            font-size: 16px; /* 텍스트 크기 */
+            margin-bottom: 15px;
+            font-size: 16px;
         }
 
         .weather-info h1 {
@@ -121,7 +105,7 @@
         }
 
         .weather-info .highlight {
-            color: #FF7A00; /* 지역 이름 강조 */
+            color: #FF7A00;
             font-weight: bold;
         }
 
@@ -145,53 +129,49 @@
             background-color: #ff7a00;
             color: white;
         }
-
-        .submit-button:active {
-            background-color: #ff7a00;
-            color: white;
-        }
-
     </style>
 </head>
 <body>
     <!-- 헤더 -->
     <header>
-        <img src="logo graphics.png" alt="On Fit" class="logo">
-        <!--today_weather url 연결해야함-->
-        <button onclick="location.href='{% url 'logout' %}'" class="onfit-button"><strong>On Fit</strong></button>
-        <!--My Page url 연결해야함-->
-        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">My Page</button>
-        <button onclick="location.href='{% url 'logout' %}'" class="logout-button">Logout</button>
-
+        <img src="{% static 'images/logo_graphics.png' %}" alt="On Fit" class="logo">
+        <button onclick="location.href='{% url 'home' %}'" class="onfit-button"><strong>On Fit</strong></button>
+        <button onclick="location.href='{% url 'users:my_page' %}'" class="logout-button">My Page</button>
+        <button onclick="location.href='{% url 'users:logout' %}'" class="logout-button">Logout</button>
     </header>
 
     <!-- 메인 컨텐츠 -->
     <main>
-        <div class="box" style= "color:black;">
+        <div class="box" style="color:black;">
             <section class="weather-info">
                 <h1>오늘 <span class="highlight">동국대학교</span>의 날씨는</h1>
                 <ul>
-                    <li>현재 온도  <strong>{{ weather.temperature }}°C</strong></li>
-                    <li class="weather-condition">날씨 조건  <strong>
+                    <li>현재 온도: <strong>{{ weather.temperature }}°C</strong></li>
+                    <li>최저 온도: <strong>{{ weather.min_temp }}°C</strong></li>
+                    <li>최고 온도: <strong>{{ weather.max_temp }}°C</strong></li>
+                    <li class="weather-condition">
+                        날씨 조건: <strong>{{ weather.status }}</strong>
                         <img 
-                        src="{% if 'rain' in conditions.lower %}Rain.svg
-                         {% elif 'snow' in conditions.lower %}Snow.svg
-                         {% elif 'wind' in conditions.lower %}Wind.svg
-                         {% else %}Sun.svg{% endif %}" 
-                        alt="{{ conditions }}" 
-                        class="weather-image">
-                    </strong></li>                    
-                    <li>풍속  <strong>{{ weather.wind_speed }}m/s</strong></li>
-                    <li>습도  <strong>{{ weather.humidity }}%</strong></li>
-                    <li>강수량  <strong>{{ weather.precipitation }}mm</strong></li>
+                            src="{% static 'images/' %}{% if 'rain' in weather.status %}Rain.svg{% elif 'snow' in weather.status %}Snow.svg{% elif 'wind' in weather.status %}Wind.svg{% else %}Sun.svg{% endif %}" 
+                            alt="{{ weather.status }}" 
+                            class="weather-image">
+                    </li>
+                    <li>풍속: <strong>{{ weather.wind_speed }}m/s</strong></li>
+                    <li>습도: <strong>{{ weather.humidity }}%</strong></li>
+                    <li>강수량: <strong>{{ weather.precipitation }}mm</strong></li>
                 </ul>
+
+                <!-- 일교차 알림 메시지 -->
+                {% if alert_message %}
+                    <p style="color: red; font-weight: bold; margin-top: 15px;">{{ alert_message }}</p>
+                {% endif %}
             </section>
         </div>
 
         <div class="box">
             <h2>On Fit한 옷 추천</h2>
-            <button type="button" class="submit-button" onclick="location.href='{% url "upload_ootd" %}'">START</button>    
-        </div>
+            <button type="button" class="submit-button" onclick="location.href='{% url 'users:upload_ootd' %}'">START</button>    
+        </div>        
     </main>
 </body>
 </html>
