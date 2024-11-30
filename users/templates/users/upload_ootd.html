@@ -88,9 +88,6 @@
             text-align: left; /* 텍스트 왼쪽 정렬 */
         }
 
-        .outfit-recommendation {
-            padding: 20px;
-        }
         .button-group {
             display: flex;
             gap: 10px;
@@ -212,7 +209,6 @@
 <main>
     <h1 style= "color:black;">On Fit한 옷 추천</h1>
     <div class="box">
-        <section class="outfit-recommendation">
             <form method="post" enctype="multipart/form-data">
                 {% csrf_token %}
                 <div>
@@ -235,7 +231,6 @@
 
                 <button type="submit" class="submit-button">OK</button>    
             </form>
-        </section>
     </div>
 </main>
 </body>

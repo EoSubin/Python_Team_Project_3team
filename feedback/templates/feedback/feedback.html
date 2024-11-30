@@ -145,22 +145,27 @@
         }
 
         .upload-button {
-            font-size: 24px;
-            width: 50px;
-            height: 50px;
+            width: 24px;
+            height: 24px;
             display: flex;
             cursor: pointer;
+            margin-top: 10px;
         }
 
         .ootd-preview {
             max-width: 300px;
             max-height: 300px;
-            border: 1px solid #e5e5e5;
-            border-radius: 5px;
             object-fit: cover;
             margin-top: 10px;
         }
 
+        input[type='file'] {
+            display: block;
+            width: 0;
+            height: 0;
+            overflow: hidden;
+          }
+        
         .submit-button {
             background-color: #e3e3e3;
             color: black;
@@ -229,39 +234,45 @@
         <button onclick="location.href='{% url 'users:logout' %}'" class="logout-button">Logout</button>    </header>
 
     <main>
-        <h1 style="color:black;">오늘의 On Fit Feedback</h1>
-        <div class="box">
-            <section class="outfit-recommendation">
-                <form method="post" enctype="multipart/form-data" action="{% url 'feedback' %}">
-                    {% csrf_token %}
-                    <div>
-                        <label><strong>오늘의 옷 추천 만족도</strong></label>
-                        <div class="feedback-icons">
-                            <button type="button" class="icon-button" onclick="selectFeedback(this, 1)">
-                                <img src={% static 'images/snowflake-regular.svg' %} alt="추웠다" style="width: 24px; height: 24px;">
-                                <p>추웠어요</p>
-                            </button>
-                            <button type="button" class="icon-button" onclick="selectFeedback(this, 2)">
-                                <img src="{% static 'images/face-smile-regular.svg' %}" alt="적당했다" style="width: 24px; height: 24px;">
-                                <p>적당했어요</p>
-                            </button>
-                            <button type="button" class="icon-button" onclick="selectFeedback(this, 3)">
-                                <img src="{% static 'images/fire-solid.svg' %}" alt="더웠다" style="width: 24px; height: 24px;">
-                                <p>더웠어요</p>
-                            </button>
+        <div style="text-align: left;">
+            <h1 style="color:black;">오늘의 On Fit Feedback</h1>
+            <div class="box">
+                <section>
+                    <form method="post" enctype="multipart/form-data" action="{% url 'feedback' %}">
+                        {% csrf_token %}
+                        <div>
+                            <label><strong>오늘의 옷 추천 만족도</strong></label>
+                            <div class="feedback-icons">
+                                <button type="button" class="icon-button" onclick="selectFeedback(this, 1)">
+                                    <img src={% static 'images/snowflake-regular.svg' %} alt="추웠다" style="width: 24px; height: 24px;">
+                                    <p>추웠어요</p>
+                                </button>
+                                <button type="button" class="icon-button" onclick="selectFeedback(this, 2)">
+                                    <img src="{% static 'images/face-smile-regular.svg' %}" alt="적당했다" style="width: 24px; height: 24px;">
+                                    <p>적당했어요</p>
+                                </button>
+                                <button type="button" class="icon-button" onclick="selectFeedback(this, 3)">
+                                    <img src="{% static 'images/fire-solid.svg' %}" alt="더웠다" style="width: 24px; height: 24px;">
+                                    <p>더웠어요</p>
+                                </button>
+                            </div>
+                            <input type="hidden" name="satisfaction" value="">
                         </div>
-                        <input type="hidden" name="satisfaction" value="">
-                    </div>
-                    
-                    <!-- OOTD 업로드 -->
-                    <div>
-                        <label for="ootd_photo">오늘의 OOTD 업로드 하기</label>
-                        <input type="file" name="ootd_photo" id="ootd_photo" accept="image/*">
-                    </div>
-                    
-                    <button type="submit" class="submit-button">Submit</button>
-                </form>
-            </section>    
+                        
+                        <!-- OOTD 업로드 -->
+                        <div>
+                            <label for="ootd_photo">
+                                <strong>오늘의 OOTD 업로드 하기</strong>
+                                <div class="upload-button"><img src="Plus circle.png" style="width: 24px; height: 24px;">
+                                </div>
+                            </label>
+                            <input type="file" name="ootd_photo" id="ootd_photo" accept="image/*">
+                        </div>
+                        
+                        <button type="submit" class="submit-button">Submit</button>
+                    </form>
+                </section>    
+            </div>
         </div>
     </main>
 </body>

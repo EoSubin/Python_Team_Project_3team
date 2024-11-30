@@ -134,6 +134,17 @@
             margin-bottom: 15px;
         }
 
+        .weather-info {
+            margin: 10px;
+            padding: 20px;
+            width: calc(100% - 40px);
+            border: 1px solid #d9d9d9;
+            border-radius: 8px;
+            background-color: #ffffff;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+
         .weather-info ul {
             list-style: none;
             padding: 0;
@@ -184,8 +195,8 @@
     </header>
 
     <main>
-        <h1 style="color:black;">On Fit한 옷 추천</h1>
-        <div class="box" style="color:black;">
+        <div style="text-align: left;">
+            <h1 style="color:black;">On Fit한 옷 추천</h1>
             <section class="weather-info">
                 <h1>오늘 <span class="highlight">동국대학교</span>의 날씨는</h1>
                 <ul>
@@ -196,7 +207,7 @@
                             src="{% static 'images/' %}{% if 'rain' in weather.status %}Rain.svg{% elif 'snow' in weather.status %}Snow.svg{% elif 'wind' in weather.status %}Wind.svg{% else %}Sun.svg{% endif %}" 
                             alt="{{ weather.status }}" 
                             class="weather-image">
-                    </li>
+                        </li>
                     <li>풍속: <strong>{{ weather.wind_speed }}m/s</strong></li>
                     <li>습도: <strong>{{ weather.humidity }}%</strong></li>
                     <li>강수량: <strong>{{ weather.precipitation }}mm</strong></li>
@@ -224,10 +235,8 @@
             {% else %}
                 <p>추천할 옷이 없습니다.</p>
             {% endif %}
-        </div>
 
-        <div class="box">
-            <h3>적정 온도</h3>
+            <h2>적정 온도</h2>
             <div class="linebox">{{ warmth_level }} (현재 온도: {{ weather.temperature }}°C)</div>
         </div>
 

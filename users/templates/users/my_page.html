@@ -95,22 +95,28 @@
             flex-wrap: wrap;
             gap: 10px;
             justify-content: center;
-            width: 630px;
         }
 
         .gallery img {
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
+            width: 30%; /* 부모 div의 30% 크기 */
+            aspect-ratio: 1; /* 1:1 비율 유지 */
+            object-fit: cover; /* 이미지 비율 유지하며 영역 채우기 */
             border: 1px solid #ddd;
             border-radius: 5px;
             cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease; /* 호버 효과 */
         }
 
         .gallery img:hover {
             border-color: #ff7a00;
         }
 
+        .gallery-container {
+            width: 100%; /* 부모 컨테이너의 너비 */
+            padding: 20px; /* 갤러리 내부 여백 */
+        }
+        
         /* 모달 스타일 */
         .modal {
             display: none;
@@ -208,17 +214,19 @@
     </header>
 
     <main>
-        <h1 style="color:black;">My Page</h1>
-
-        <div class="box">
-            <h2>My Page</h2>
-            <p>안녕하세요, <span class="highlight">{{ user_profile.user.username }}</span>님!</p>
-
-            <!-- Feedback 섹션 -->
-            <h3>과거 OOTD 데이터</h3>
+        <div style="text-align: left;">
+            <h1 style="color:black;">My Page</h1>
             <div class="box">
+                <p>안녕하세요, <span class="highlight">{{ user_profile.user.username }}</span>님!</p>
+            </div>    
+        </div>
+
+        <div style="text-align: left;">
+            <!-- Feedback 섹션 -->
+            <h2 style="color:black;">과거 OOTD 데이터</h2>
+            <div class="box gallery-container">
                 {% for feedback in feedbacks %}
-                    <div>
+                    <div class = "gallery">
                         <p>만족도: {{ feedback.get_satisfaction_display }}</p>
                         {% if feedback.ootd_photo %}
                             <img src="{{ feedback.ootd_photo.url }}" alt="Uploaded OOTD" style="max-width: 200px; height: auto;">
@@ -230,20 +238,23 @@
                     <p>아직 등록된 Feedback이 없습니다.</p>
                 {% endfor %}
             </div>
+
+            <!-- 모달 -->
+            <div id="imageModal" class="modal">
+                <span class="close">&times;</span>
+                <img id="modalImage" src="" alt="Large OOTD">
+                <p id="imageDate"></p>
+            </div>
         </div>
 
-        <!-- 모달 -->
-        <div id="imageModal" class="modal">
-            <span class="close">&times;</span>
-            <img id="modalImage" src="" alt="Large OOTD">
-            <p id="imageDate"></p>
+        <div style="text-align: left;">
+            <!-- 취향 재설정 -->
+            <h2 style="color:black;">옷 불호 취향 재설정하기</h2>
+            <div class="box">
+                <button type="button" class="submit-button" onclick="location.href='{% url "dislike_survey" %}'">START</button>    
+            </div>
         </div>
 
-        <!-- 취향 재설정 -->
-        <h2 style="color:black;">옷 불호 취향 재설정하기</h2>
-        <div class="box">
-            <button type="button" class="submit-button" onclick="location.href='{% url "dislike_survey" %}'">START</button>    
-        </div>
     </main>
 </body>
 </html>
