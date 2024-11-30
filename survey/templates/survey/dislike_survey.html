@@ -46,6 +46,7 @@
             margin: 20px 0;
             padding: 20px;
             width: calc(100% - 40px);
+            max-width: 1000px;
             border: 1px solid #d9d9d9;
             border-radius: 8px;
             background-color: #ffffff;
@@ -76,17 +77,23 @@
             color: white;
         }
 
+        .next-button:active {
+            opacity: 1;
+            transform: scale(1.2);
+            filter: invert(51%) sepia(12%) saturate(6675%) hue-rotate(360deg) brightness(101%) contrast(109%);        
+        }
+
         .next-button {
             border: 0;
-            background-color: #3B7EE2;
-            color: white;
+            background-color: transparent;
             padding: 10px 20px;
-            border-radius: 5px;
             cursor: pointer;
             display: block;
-            margin: 30px auto;
-            font-size: 16px;
-        }
+            margin: 20px auto;
+
+            opacity: 0.6;
+            transition: opacity 0.3s, transform 0.2s;        
+        }    
     </style>
     <script>
         function toggleCheckbox(button) {
@@ -125,7 +132,7 @@
                 </div>
             </div>
             {% endfor %}
-            <button type="submit" class="next-button">완료하기</button>
+            <button type="submit" class="next-button"><img src="{% static 'images/Arrow right-circle.png' %}"/></button>
         </form>
     </main>
 </body>

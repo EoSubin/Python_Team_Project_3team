@@ -97,31 +97,47 @@
             border: none;
             cursor: pointer;
             border-radius: 50%;
-            width: 50px;
+            max-width: fit-content; 
             height: 50px;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
             opacity: 0.6;
             transition: opacity 0.3s, transform 0.2s;
         }
 
-        .icon-button p {
-            margin-left: 5px;
-            font-size: 12px;
-            color: black;
-            text-align: center;
+        .icon-button img {
+            width: 24px; 
+            height: 24px; 
+            margin-bottom: 1px; 
         }
 
+        .icon-button p {
+            margin-left: 5px;
+            font-size: 11px;
+            color: black;
+            text-align: center;
+            white-space: nowrap; 
+        }        
+
         .icon-button.selected {
-            opacity: 1.0;
-            border: 2px solid #3B7EE2;
-            background-color: #3B7EE2;
-            width: 60px;
-            height: 60px;
-            border-radius: 0;
+            opacity: 1.0; 
+            transform: scale(1.1); 
+            background-color: white; 
+            color: #FF7A00; 
         }
+
+        .icon-button.selected img {
+            fill: #FF7A00; /* SVG 색상 변경 */
+            filter: brightness(0) saturate(100%) invert(53%) sepia(94%) saturate(715%) hue-rotate(359deg) brightness(95%) contrast(101%); /* SVG 컬러 필터 */
+        }
+
+        .icon-button.selected p {
+            color: #FF7A00; 
+            filter: brightness(0) saturate(100%) invert(53%) sepia(94%) saturate(715%) hue-rotate(359deg) brightness(95%) contrast(101%); /* SVG 컬러 필터 */
+        }
+
         .ootd-upload-container {
             display: flex;
             gap: 10px;
@@ -167,7 +183,7 @@
         }
     </style>
 
-<script>
+    <script>
     // 만족도 버튼 선택 로직
     function selectFeedback(button, value) {
         const allButtons = document.querySelectorAll('.icon-button');
@@ -202,49 +218,51 @@
             }
         });
     });
-        </script>
-        </head>
-        <body>
-        <header>
-            <img src="{% static 'images/logo_graphics.png' %}" alt="On Fit" class="logo">
-            <button onclick="location.href='{% url 'home' %}'" class="onfit-button"><strong>On Fit</strong></button>
-            <button onclick="location.href='{% url 'users:my_page' %}'" class="logout-button">My Page</button>
-            <button onclick="location.href='{% url 'users:logout' %}'" class="logout-button">Logout</button>
-        </header>
+    </script>
+</head>
 
-        <main>
-            <h1 style="color:black;">오늘의 On Fit Feedback</h1>
-            <div class="box">
-                <section class="outfit-recommendation">
-                    <form method="post" enctype="multipart/form-data" action="{% url 'feedback' %}">
-                        {% csrf_token %}
-                        <div>
-                            <label><strong>오늘의 옷 추천 만족도</strong></label>
-                            <div class="feedback-icons">
-                                <button type="button" class="icon-button" onclick="selectFeedback(this, 1)">
-                                    <img src="{% static 'images/snowflake-regular.svg' %}" alt="추웠다" style="width: 24px; height: 24px;">
-                                </button>
-                                <button type="button" class="icon-button" onclick="selectFeedback(this, 2)">
-                                    <img src="{% static 'images/face-smile-regular.svg' %}" alt="적당했다" style="width: 24px; height: 24px;">
-                                </button>
-                                <button type="button" class="icon-button" onclick="selectFeedback(this, 3)">
-                                    <img src="{% static 'images/fire-solid.svg' %}" alt="더웠다" style="width: 24px; height: 24px;">
-                                </button>
-                            </div>
-                            <input type="hidden" name="satisfaction" value="">
+<body>
+    <header>
+        <img src="{% static 'images/logo_graphics.png' %}" alt="On Fit" class="logo">
+        <button onclick="location.href='{% url 'home' %}'" class="onfit-button"><strong>On Fit</strong></button>
+        <button onclick="location.href='{% url 'users:my_page' %}'" class="logout-button">My Page</button>
+        <button onclick="location.href='{% url 'users:logout' %}'" class="logout-button">Logout</button>    </header>
+
+    <main>
+        <h1 style="color:black;">오늘의 On Fit Feedback</h1>
+        <div class="box">
+            <section class="outfit-recommendation">
+                <form method="post" enctype="multipart/form-data" action="{% url 'feedback' %}">
+                    {% csrf_token %}
+                    <div>
+                        <label><strong>오늘의 옷 추천 만족도</strong></label>
+                        <div class="feedback-icons">
+                            <button type="button" class="icon-button" onclick="selectFeedback(this, 1)">
+                                <img src={% static 'images/snowflake-regular.svg' %} alt="추웠다" style="width: 24px; height: 24px;">
+                                <p>추웠어요</p>
+                            </button>
+                            <button type="button" class="icon-button" onclick="selectFeedback(this, 2)">
+                                <img src="{% static 'images/face-smile-regular.svg' %}" alt="적당했다" style="width: 24px; height: 24px;">
+                                <p>적당했어요</p>
+                            </button>
+                            <button type="button" class="icon-button" onclick="selectFeedback(this, 3)">
+                                <img src="{% static 'images/fire-solid.svg' %}" alt="더웠다" style="width: 24px; height: 24px;">
+                                <p>더웠어요</p>
+                            </button>
                         </div>
+                        <input type="hidden" name="satisfaction" value="">
+                    </div>
                     
-                        <!-- OOTD 업로드 -->
-                        <div>
-                            <label for="ootd_photo">오늘의 OOTD 업로드 하기</label>
-                            <input type="file" name="ootd_photo" id="ootd_photo" accept="image/*">
-                        </div>
+                    <!-- OOTD 업로드 -->
+                    <div>
+                        <label for="ootd_photo">오늘의 OOTD 업로드 하기</label>
+                        <input type="file" name="ootd_photo" id="ootd_photo" accept="image/*">
+                    </div>
                     
-                        <button type="submit">Submit</button>
-                    </form>
-                    
-        </section>    
-    </div>
-</main>
+                    <button type="submit" class="submit-button">Submit</button>
+                </form>
+            </section>    
+        </div>
+    </main>
 </body>
 </html>
